@@ -1,5 +1,5 @@
 #include "huffmanDecoder.hpp"
-#include <algorithm>
+
 
 HuffmanTree::~HuffmanTree() {
 	destroy(root_);
@@ -15,39 +15,39 @@ error_type HuffmanTree::buildFromHeader(const std::vector<std::pair<std::string,
     root_->setKey("");         // internal nodes can have empty key
 
     for (const auto& [word, code] : header) {
-        TreeNode* cur = root_;
+        TreeNode* curr = root_;
         for (char b : code) {
             if (b == '0') {
-                if (cur->leftSubtree() == nullptr) {
+                if (curr->leftSubtree() == nullptr) {
                     auto* child = new TreeNode(0);
                     child->setKey("");
-                    cur->leftSubtree(child);
+                    curr->leftSubtree(child);
                 }
-                cur = cur->leftSubtree();
+                curr = curr->leftSubtree();
             }
             else if (b == '1') {
-                if (cur->rightSubtree() == nullptr) {
+                if (curr->rightSubtree() == nullptr) {
                     auto* child = new TreeNode(0);
                     child->setKey("");
-                    cur->rightSubtree(child);
+                    curr->rightSubtree(child);
                 }
-                cur = cur->rightSubtree();
+                curr = curr->rightSubtree();
             }
             else {
                 // invalid bit in header
                 return FAILED_TO_WRITE_FILE;
             }
         }
-        // at the end of the code, cur must be a leaf for this word
-        cur->setKey(word);
+        // at the end of the code, curr must be a leaf for this word
+        curr->setKey(word);
     }
 
     return NO_ERROR;
 }
 
 error_type HuffmanTree::decode(std::istream& codeStream, std::ostream& outStream) const {
+    //No tree present is allowed
     if (!root_) {
-        // no tree, but let's allow empty decode -> empty output
         return NO_ERROR;
     }
     if (!codeStream.good()) {
@@ -57,7 +57,7 @@ error_type HuffmanTree::decode(std::istream& codeStream, std::ostream& outStream
         return UNABLE_TO_OPEN_FILE_FOR_WRITING;
     }
 
-    const TreeNode* cur = root_;
+    const TreeNode* curr = root_;
     char ch;
     while (codeStream.get(ch)) {
         // Just skip newlines in the .code file
@@ -71,32 +71,32 @@ error_type HuffmanTree::decode(std::istream& codeStream, std::ostream& outStream
 
         // follow bit
         if (ch == '0') {
-            cur = cur->leftSubtree();
+            curr = curr->leftSubtree();
         }
         else {
-            cur = cur->rightSubtree();
+            curr = curr->rightSubtree();
         }
 
         // we followed a path that doesn't exist
-        if (cur == nullptr) {
+        if (curr == nullptr) {
             return FAILED_TO_WRITE_FILE;
         }
 
-        //is leaf?
-        if (cur->leftSubtree() == nullptr && cur->rightSubtree() == nullptr) {
+        // is cur a leaf?
+        if (curr->leftSubtree() == nullptr && curr->rightSubtree() == nullptr) {
             // this node must have the word from header
-            outStream << cur->key() << '\n';
+            outStream << curr->key() << '\n';
             if (!outStream) { 
                 return FAILED_TO_WRITE_FILE; 
             }
 
             // restart for next word
-            cur = root_;
+            curr = root_;
         }
     }
 
-    if (cur != root_) {
-        // incomplete code at end of file
+    // incomplete code at end of file
+    if (curr != root_) {
         return FAILED_TO_WRITE_FILE;
     }
 
