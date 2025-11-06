@@ -8,7 +8,8 @@ done with the aid of chatgpt.
 Lecture and main project page provided helpful details and implementation steps for the program, and the structure of project 3 aided with development
 <br><br>
 The construction of main() was done by working off of what I had in project 3, simply making sure to adjust for the needed inputs in this scenario.
-As a result, the structure is very similar to what was present in project 3. Although the addition of the helper function was done so as a suggestion from chatgpt due to 
+As a result, the structure is very similar to what was present in project 3. Although the addition of the helper function was done so as a suggestion from chatgpt due to unxureness of where or how to handle 
+construction of a vector of pairs from header
 <br><br>
 TreeNode and utils were ported over directly from project 3 due to the expectation that it would be needed.
 <br><br>
@@ -31,6 +32,7 @@ if not then we enter the right subtree. If we enter a nullptr, then an error is 
 With an extra check being done to make sure writing to the outStream is successful. After writing, the node is reset to the root node. After the while loop, if curr is not set back to the root node, then an error in writing has 
 occurred and an error is returned.
 <br>
+### main
 main() works very similarly to what was done in project3, simply adjusting for two file inputs. Two file paths are created for the header and code paths respectively, and are normalized to ensure that the 
 input_output directory is found. Then the output path is created. Checks are done for these paths to make sure they are existent and usable, in a manner done similarly in project 3. A helper function is then called 
 to read from the header file, and build a vector of string pairs.
